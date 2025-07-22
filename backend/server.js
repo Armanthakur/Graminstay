@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -9,24 +10,27 @@ const path = require('path');
 const session = require('express-session');
 
 const app = express();
+const PORT = process.env.PORT || 5000;
+
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: process.env.CORS_ORIGIN,
   credentials: true
 }));
+
 app.use(bodyParser.json());
 
 // Session middleware
 app.use(session({
-  secret: 'your-secret-key',
+  secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: false,
-  cookie: { secure: false, httpOnly: true, maxAge: 24 * 60 * 60 * 1000 } // 1 day
+  saveUninitialized: true,
+  cookie: { secure: process.env.NODE_ENV === 'production', httpOnly: true, maxAge: 24 * 60 * 60 * 1000 } // 1 day
 }));
 
 // Serve uploads folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-mongoose.connect("mongodb://127.0.0.1:27017/graminstay")
+mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ MongoDB connected");
   })
@@ -45,6 +49,6 @@ app.use((req, res) => {
 });
 
 
-app.listen(5000, () => {
-  console.log("🚀 Server running on http://localhost:5000");
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
