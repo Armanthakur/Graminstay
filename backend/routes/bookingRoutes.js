@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Booking = require('../models/Booking');
+const Homestay = require('../models/Homestay');
 
 // POST /api/bookings
 router.post('/', async (req, res) => {
@@ -32,5 +33,16 @@ router.get('/homestay/:homestayId', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch bookings' });
   }
 });
+router.get('/getAll', async (req, res)=>  {
+  try{
+    const data = await Homestay.find();
+    res.json ({
+      data
+    })
+  }
+  catch{
+    console.error("Not found")
+  }
+})
 
 module.exports = router; 
